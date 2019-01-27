@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1009525148669",
+    "firebase_url": "https://collective-218be.firebaseio.com",
+    "project_id": "collective-218be",
+    "storage_bucket": "collective-218be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009525148669:android:9503afb6467184b6",
+        "android_client_info": {
+          "package_name": "com.collective.collective"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1009525148669-75aam2mru6mhr21eqrpkqgghntfp2bmf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBltb4R2RYnhlAYp9B200gPQfcFYzBoj2Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
