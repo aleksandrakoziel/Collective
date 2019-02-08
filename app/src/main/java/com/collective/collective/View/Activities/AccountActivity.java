@@ -2,10 +2,13 @@ package com.collective.collective.View.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,23 +24,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.collective.collective.AccountInfoFragment;
+import com.collective.collective.Model.Firestore.Album;
+import com.collective.collective.UserActivity;
+import com.collective.collective.UserAlbumsFragment2;
 import com.collective.collective.View.Fragments.FollowingsFragment;
 import com.collective.collective.R;
 import com.collective.collective.UserAlbumsFragment;
-import com.collective.collective.dummy.DummyContent;
+import com.collective.collective.View.Utils.AccountDataUtils;
+import com.collective.collective.View.Utils.ListsUtils;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountActivity
         extends AppCompatActivity
         implements AccountInfoFragment.OnFragmentInteractionListener,
         FollowingsFragment.OnListFragmentInteractionListener,
-        UserAlbumsFragment.OnListFragmentInteractionListener {
+        UserAlbumsFragment.OnListFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -68,32 +80,31 @@ public class AccountActivity
 
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
         drawerLayout = findViewById(R.id.drawer_layout);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), SearchArtistActivity.class);
+            startActivity(intent);
         });
 
+        setNavigationViewListener();
     }
 
 
@@ -158,8 +169,52 @@ public class AccountActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction() {
 
+    }
+
+    @Override
+    public void onListFragmentInteraction(Album item) {
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_account: {
+                Intent intent = new Intent(getApplicationContext(), AccountActivity.class);
+                intent.putExtra("username_uid", FirebaseAuth.getInstance().getUid());
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_settings: {
+                Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_artist: {
+                Intent intent = new Intent(getApplicationContext(), SearchArtistActivity.class);
+                startActivity(intent);
+                break;
+            }
+        }
+        //close navigation drawer
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void setNavigationViewListener() {
+        NavigationView navigationView = findViewById(R.id.navigation_drawer);
+        View headerView =  navigationView.getHeaderView(0);
+        TextView usernameDrawer = headerView.findViewById(R.id.drawer_username);
+        usernameDrawer.setText(AccountDataUtils.getAccountUsername(this));
+
+        CircleImageView profileDrawer = headerView.findViewById(R.id.drawer_profile_picture);
+        Bitmap profilePicture = AccountDataUtils.loadProfilePictureStorage(this);
+        if (profilePicture != null && profileDrawer != null) {
+            profileDrawer.setImageBitmap(profilePicture);
+        }
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     /**
@@ -212,13 +267,13 @@ public class AccountActivity
                     currentFragment = AccountInfoFragment.newInstance(userUid);
                     break;
                 case 1:
-                    currentFragment = UserAlbumsFragment.newInstance(1);
+                    currentFragment = UserAlbumsFragment2.newInstance(ListsUtils.ALBUM_COLLECTED_NAME);
                     break;
                 case 2:
-                    currentFragment = UserAlbumsFragment.newInstance(1);
+                    currentFragment = UserAlbumsFragment.newInstance(ListsUtils.ALBUM_WANTED_NAME);
                     break;
                 case 3:
-                    currentFragment = UserAlbumsFragment.newInstance(1);
+                    currentFragment = UserAlbumsFragment.newInstance(ListsUtils.ALBUM_LOVED_NAME);
                     break;
                 case 4:
                     currentFragment = FollowingsFragment.newInstance(2);

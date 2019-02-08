@@ -1,21 +1,28 @@
 package com.collective.collective.Model.Firestore;
 
-/**
- * Created by Aleksandra on 14.01.2019.
- */
 
 public class Album {
     private String artist;
-    private String name;
-    private int year;
+    private String title;
     private String mbid;
-    private boolean cassette;
-    private boolean cd;
-    private boolean vinyl;
-    private boolean cloud;
+    private String image;
+    private String cassette;
+    private String cd;
+    private String vinyl;
+    private String cloud;
 
     public Album() {
+    }
 
+    public Album(String artist, String title, String mbid, String image, String cassette, String cd, String vinyl, String cloud) {
+        this.artist = artist;
+        this.title = title;
+        this.mbid = mbid;
+        this.image = image;
+        this.cassette = cassette;
+        this.cd = cd;
+        this.vinyl = vinyl;
+        this.cloud = cloud;
     }
 
     public String getArtist() {
@@ -26,20 +33,20 @@ public class Album {
         this.artist = artist;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public int getYear() {
-        return year;
+    public String getImage() {
+        return image;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getMbid() {
@@ -51,34 +58,35 @@ public class Album {
     }
 
     public boolean isCassette() {
-        return cassette;
+
+        return cassette.equals("true");
     }
 
-    public void setCassette(boolean cassette) {
+    public void setCassette(String cassette) {
         this.cassette = cassette;
     }
 
     public boolean isCd() {
-        return cd;
+        return cd.equals("true");
     }
 
-    public void setCd(boolean cd) {
+    public void setCd(String cd) {
         this.cd = cd;
     }
 
     public boolean isVinyl() {
-        return vinyl;
+        return vinyl.equals("true");
     }
 
-    public void setVinyl(boolean vinyl) {
+    public void setVinyl(String vinyl) {
         this.vinyl = vinyl;
     }
 
     public boolean isCloud() {
-        return cloud;
+        return cloud.equals("true");
     }
 
-    public void setCloud(boolean cloud) {
+    public void setCloud(String cloud) {
         this.cloud = cloud;
     }
 }

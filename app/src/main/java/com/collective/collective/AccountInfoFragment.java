@@ -4,6 +4,10 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,16 +21,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.collective.collective.Model.Firestore.User;
+import com.collective.collective.View.Utils.AccountDataUtils;
 import com.collective.collective.ViewModel.UserViewModel;
 import com.collective.collective.ViewModel.UserViewModelFactory;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -155,6 +166,10 @@ public class AccountInfoFragment extends Fragment {
             if (newUser != null) {
                 user = newUser;
                 currentUsername = user.getUsername();
+                String savedUsername = AccountDataUtils.getAccountUsername(getContext());
+                if (Objects.equals(savedUsername, AccountDataUtils.DEFAULT_USERNAME) && isMainAccount()) {
+                    AccountDataUtils.saveAccountUsername(getContext(), currentUsername);
+                }
                 username.setText(user.getUsername());
                 description.setText(user.getDescription());
                 loadProfilePicture(currentUsername);
@@ -170,14 +185,19 @@ public class AccountInfoFragment extends Fragment {
     }
 
     void loadProfilePicture(String username) {
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference()
-                .child("images/users/" + username + ".jpg");
-        storageReference.getDownloadUrl()
-                .addOnSuccessListener(uri -> loadProfilePictureIntoImageView(storageReference, true))
-                .addOnFailureListener(e -> {
-                    Log.e("ACCOUNT", "Cannot load image with error: ", e);
-                   loadProfilePictureIntoImageView(storageReference, false);
-                });
+        Bitmap profile = AccountDataUtils.loadProfilePictureStorage(getContext());
+        if (profile != null && isMainAccount()) {
+            profilePicture.setImageBitmap(profile);
+        } else {
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+                    .child("images/users/" + username + ".jpg");
+            storageReference.getDownloadUrl()
+                    .addOnSuccessListener(uri -> loadProfilePictureIntoImageView(storageReference, true))
+                    .addOnFailureListener(e -> {
+                        Log.e("ACCOUNT", "Cannot load image with error: ", e);
+                        loadProfilePictureIntoImageView(storageReference, false);
+                    });
+        }
     }
 
     void loadProfilePictureIntoImageView(StorageReference storageReference, boolean isResourceExist) {
@@ -185,6 +205,17 @@ public class AccountInfoFragment extends Fragment {
             GlideApp.with(this)
                     .load(storageReference)
                     .into(profilePicture);
+            if (isMainAccount()) {
+                try {
+                    final File localFile = File.createTempFile("Images", "bmp");
+                    storageReference.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        AccountDataUtils.saveProfilePicture(bitmap, getContext());
+                    }).addOnFailureListener(e -> Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             profilePicture.setImageResource(R.drawable.cd);
         }

@@ -21,12 +21,12 @@ import com.google.firebase.firestore.Query;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link com.collective.collective.UserAlbumsFragment.OnListFragmentInteractionListener}
  * interface.
  */
-public class UserAlbumsFragment extends Fragment {
+public class UserAlbumsFragment2 extends Fragment {
     private static final String TYPE = "type";
-    private OnListFragmentInteractionListener mListener;
+    private com.collective.collective.UserAlbumsFragment.OnListFragmentInteractionListener mListener;
     private CollectedAlbumsRecyclerViewAdapter collectedAlbumsRecyclerViewAdapter;
 
     public static final int USER_ALBUM_LIST_TYPE_COLLECTED = 1;
@@ -34,17 +34,25 @@ public class UserAlbumsFragment extends Fragment {
     public static final int USER_ALBUM_LIST_TYPE_LOVED = 3;
     String listType;
 
+
+    String ownerUid = FirebaseAuth.getInstance().getUid();
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    CollectionReference albumsReference = firebaseFirestore
+            .collection("users")
+            .document(ownerUid)
+            .collection("collected");
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public UserAlbumsFragment() {
+    public UserAlbumsFragment2() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static UserAlbumsFragment newInstance(String type) {
-        UserAlbumsFragment fragment = new UserAlbumsFragment();
+    public static UserAlbumsFragment2 newInstance(String type) {
+        UserAlbumsFragment2 fragment = new UserAlbumsFragment2();
         Bundle args = new Bundle();
         args.putString(TYPE, type);
         fragment.setArguments(args);
@@ -69,37 +77,29 @@ public class UserAlbumsFragment extends Fragment {
     }
 
     private void setUpRecyclerView(View view, String listType) {
-        String ownerUid = FirebaseAuth.getInstance().getUid();
-        if (ownerUid != null && listType != null) {
-            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            CollectionReference albumsReference = firebaseFirestore
-                    .collection("users")
-                    .document(ownerUid)
-                    .collection(listType);
-            Query query = albumsReference.orderBy("artist", Query.Direction.ASCENDING);
-            FirestoreRecyclerOptions<Album> albumFirestoreRecyclerOptions =
-                    new FirestoreRecyclerOptions.Builder<Album>()
-                            .setQuery(query, Album.class)
-                            .build();
+        Query query = albumsReference;
+        FirestoreRecyclerOptions<Album> albumFirestoreRecyclerOptions =
+                new FirestoreRecyclerOptions.Builder<Album>()
+                        .setQuery(query, Album.class)
+                        .build();
+        collectedAlbumsRecyclerViewAdapter = new CollectedAlbumsRecyclerViewAdapter(albumFirestoreRecyclerOptions);
 
-            collectedAlbumsRecyclerViewAdapter = new CollectedAlbumsRecyclerViewAdapter(albumFirestoreRecyclerOptions);
-
-            RecyclerView recyclerView = view.findViewById(R.id.list_albums);
-            recyclerView.setLayoutManager(new RecyclerView.LayoutManager() {
-                @Override
-                public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-                    return null;
-                }
-            });
-            recyclerView.setAdapter(collectedAlbumsRecyclerViewAdapter);
-        }
+        RecyclerView recyclerView = view.findViewById(R.id.list_albums);
+        recyclerView.setLayoutManager(new RecyclerView.LayoutManager() {
+            @Override
+            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                return null;
+            }
+        });
+        recyclerView.setAdapter(collectedAlbumsRecyclerViewAdapter);
     }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof com.collective.collective.UserAlbumsFragment.OnListFragmentInteractionListener) {
+            mListener = (com.collective.collective.UserAlbumsFragment.OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
@@ -139,3 +139,4 @@ public class UserAlbumsFragment extends Fragment {
         collectedAlbumsRecyclerViewAdapter.stopListening();
     }
 }
+

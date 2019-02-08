@@ -126,8 +126,7 @@ public class SignActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(login, password).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(SignActivity.this, "You were successfully signWithPassword in Collective", Toast.LENGTH_SHORT).show();
-                finish();
-                startActivity(new Intent(getApplicationContext(), UserActivity.class));
+                onUserSignedIn();
             } else {
                 Toast.makeText(SignActivity.this, "Could not signWithPassword in. Please try again.", Toast.LENGTH_SHORT).show();
             }

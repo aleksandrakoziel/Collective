@@ -49,10 +49,20 @@
         <activity android:name=".SetupAccountActivity" />
         <activity
             android:name=".View.Activities.AccountActivity"
-            android:label="@string/title_activity_account"
+            android:label="@string/name_activity_account"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity
+            android:name=".View.Activities.SearchArtistActivity"
+            android:label="Search by artist"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".View.Activities.DiscographyActivity"
+            android:label="Artist discography"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
-
 </manifest>

@@ -5,23 +5,23 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/nav_account"
             android:title="Account" />
         <item
-            android:id="@+id/nav_rooms"
+            android:id="@+id/nav_settings"
             android:title="Settings" />
         <item
-            android:id="@+id/nav_users"
+            android:id="@+id/nav_about"
             android:title="About" />
     </group>
 
     <item android:title="Search">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_artist"
                 android:title="By artist" />
             <item
-                android:id="@+id/nav_help"
+                android:id="@+id/nav_album"
                 android:title="By album" />
         </menu>
     </item>

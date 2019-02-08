@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.collective.collective.Model.Firestore.Following;
 import com.collective.collective.R;
-import com.collective.collective.View.Adapters.CollectedAlbumsRecyclerViewAdapter;
+import com.collective.collective.View.Adapters.FollowingsRecyclerViewAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -38,10 +38,8 @@ public class FollowingsFragment extends Fragment {
             .document(ownerUid)
             .collection("followings");
 
-    private CollectedAlbumsRecyclerViewAdapter.FollowingsRecyclerViewAdapter followingsRecyclerViewAdapter;
+    private FollowingsRecyclerViewAdapter followingsRecyclerViewAdapter;
 
-    public static final int USER_LIST_FOLLOWERS = 1;
-    public static final int USER_LIST_FOLLOWINGS = 2;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,13 +74,14 @@ public class FollowingsFragment extends Fragment {
                 .setQuery(query, Following.class)
                 .build();
 
-        followingsRecyclerViewAdapter = new CollectedAlbumsRecyclerViewAdapter.FollowingsRecyclerViewAdapter(followingFirestoreRecyclerOptions);
+        followingsRecyclerViewAdapter = new FollowingsRecyclerViewAdapter(followingFirestoreRecyclerOptions);
 
         RecyclerView recyclerView = view.findViewById(R.id.followings_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), mColumnCount));
         recyclerView.setAdapter(followingsRecyclerViewAdapter);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
